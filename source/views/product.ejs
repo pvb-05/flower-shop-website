@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= product.name %> — FlowerPremiu</title>
+  
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <style>
+    body { scroll-behavior: smooth; overflow-x: hidden; }
+    .page-enter {
+      opacity: 0; transform: translateY(20px);
+      animation: pageIn 0.6s ease forwards;
+    }
+    @keyframes pageIn { to { opacity: 1; transform: translateY(0); } }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+
+<body class="font-['Outfit',sans-serif] bg-base-100 text-base-content min-h-screen flex flex-col">
+
+<header>
+  <div class="navbar bg-base-100 flex border-b-1 mx-auto w-full max-w-7xl h-auto px-4">
+    <div class="flex-1">
+      <a href="/">
+        <img src="/images/logo.png" alt="Logo" class="logo pb-5 w-auto h-20">
+      </a>
+    </div>
+    
+    <div class="flex-none">
+      <ul class="menu menu-horizontal px-1 pb-0 gap-8">
+        <li><a class="text-sm font-bold" href="/gallery">GALLERY</a></li>
+        <li><a class="text-sm font-bold" href="/about">ABOUT</a></li>
+        <li>
+          <details>
+            <summary class="text-sm font-bold">MORE</summary>
+            <ul class="bg-base-100 rounded-t-none p-2 w-30 z-50 shadow">
+              <% if (user) { %>
+                <li><b>Hi, <%= user.username %></b></li>
+                <li><a href="/logout">Logout</a></li>
+                <li><a href="/history">Orders</a></li>
+              <% } else { %>
+                <li><a href="/login">Login</a></li>
+              <% } %>
+              <li><a href="/contact">Contact</a></li>
+            </ul>
+          </details>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<div class="max-w-7xl mx-auto px-4 w-full mt-4">
+  <div class="breadcrumbs text-sm text-gray-500 font-medium">
+    <ul>
+      <li><a href="/">FlowerPremiu</a></li>
+      <li><a href="/gallery">Gallery</a></li>
+      <li class="text-base-content font-bold"><%= product.name %></li>
+    </ul>
+  </div>
+</div>
+
+<main class="flex-grow max-w-7xl mx-auto px-4 w-full py-8 page-enter">
+  <div class="grid grid-cols-1 lg:grid-cols-[500px_1fr] xl:grid-cols-[560px_1fr] gap-10 lg:gap-16 items-start">
+    
+    <div class="lg:sticky lg:top-24">
+      <div class="relative w-full aspect-square bg-base-200 rounded-4xl overflow-hidden shadow-sm border border-base-200 group cursor-zoom-in">
+        <img src="/images/<%= product.image %>" onerror="this.src='/images/logo.png'" alt="<%= product.name %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          Xem chi tiết
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-8 pt-6 border-t border-base-200">
+        <div class="flex items-center gap-4">
+          <span class="text-xs font-bold tracking-widest uppercase text-gray-500">Chia sẻ:</span>
+          <div class="flex gap-2">
+            <a href="#" class="w-10 h-10 rounded-full border border-base-300 flex items-center justify-center text-gray-500 hover:bg-base-200 hover:text-base-content transition-colors font-serif italic">f</a>
+            <a href="#" class="w-10 h-10 rounded-full border border-base-300 flex items-center justify-center text-gray-500 hover:bg-base-200 hover:text-base-content transition-colors font-serif italic">p</a>
+          </div>
+        </div>
+        <button id="likeBtn" onclick="toggleLike()" class="flex items-center gap-2 border border-base-300 px-4 py-2 rounded-full text-sm font-medium text-gray-500 hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition-all">
+          <span id="likeHeart" class="text-lg">♡</span> <span id="likeCount">128</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col">
+      <div class="badge bg-[#7a9d66] text-white border-none uppercase tracking-widest text-[0.65rem] px-3 py-3 font-bold mb-4">
+        Phân loại: <%= product.category_slug %>
+      </div>
+      <h1 class="text-4xl lg:text-5xl font-bold leading-tight text-base-content mb-2"><%= product.name %></h1>
+      
+      <div class="flex items-center gap-4 pb-6 border-b border-base-200 mt-4 mb-6">
+        <div class="flex items-center gap-1 text-yellow-400 text-lg">★★★★★</div>
+        <span class="font-bold text-[#7a9d66]">5.0</span>
+        <div class="w-px h-4 bg-base-300 mx-2"></div>
+        <span class="text-sm text-gray-500">Tình trạng: <% if(product.stock > 0) { %> Còn hàng (<%= product.stock %>) <% } else { %> Hết hàng <% } %></span>
+      </div>
+
+      <div class="bg-[#faf7f2] p-6 rounded-3xl border-l-4 border-[#7a9d66] mb-8">
+        <div class="flex items-baseline flex-wrap gap-3">
+          <span class="text-4xl font-bold text-[#7a9d66]">
+            <%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price) %>
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[100px_1fr] gap-4 py-4 border-b border-base-200 text-sm items-center">
+        <div class="text-gray-500 font-bold uppercase tracking-wider text-xs">Vận Chuyển</div>
+        <div>
+          <div class="flex items-center gap-2 text-base-content mb-1">
+            <span class="text-[#7a9d66] text-lg">🚚</span>
+            <span>Nhận trong <strong class="font-bold">Hôm nay</strong></span>
+          </div>
+          <div class="text-gray-500 font-medium">Phí ship 0đ cho đơn nội thành</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-[100px_1fr] gap-4 py-4 border-b border-base-200 text-sm items-center">
+        <div class="text-gray-500 font-bold uppercase tracking-wider text-xs">Số Lượng</div>
+        <div class="flex items-center gap-4">
+          <div class="join border border-base-300 rounded-full">
+            <button class="join-item btn btn-sm bg-white hover:bg-base-200 border-none text-lg px-4" onclick="changeQty(-1)">-</button>
+            <input id="qtyInput" class="join-item input input-sm w-16 text-center border-none focus:outline-none bg-white font-bold" type="number" value="1" min="1" max="<%= product.stock %>" />
+            <button class="join-item btn btn-sm bg-white hover:bg-base-200 border-none text-lg px-4" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <button onclick="buyNow('<%= product.id %>')" class="btn w-full bg-[#7a9d66] border-none text-white hover:bg-[#607e4f] rounded-full uppercase tracking-widest text-sm font-bold h-14 shadow-md">
+         Mua Ngay
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mt-20 pt-10 border-t border-base-200">
+    <div class="flex flex-wrap border-b-2 border-base-200 gap-4 lg:gap-10 mb-10">
+      <button class="tab-btn active pb-4 text-xs lg:text-sm font-bold tracking-widest uppercase text-gray-400 hover:text-base-content border-b-2 border-transparent transition-all" onclick="switchTab('desc',this)">Mô Tả</button>
+      <button class="tab-btn pb-4 text-xs lg:text-sm font-bold tracking-widest uppercase text-gray-400 hover:text-base-content border-b-2 border-transparent transition-all" onclick="switchTab('care',this)">Chăm Sóc</button>
+      <button class="tab-btn pb-4 text-xs lg:text-sm font-bold tracking-widest uppercase text-gray-400 hover:text-base-content border-b-2 border-transparent transition-all" onclick="switchTab('specs',this)">Thông Số</button>
+      <button class="tab-btn pb-4 text-xs lg:text-sm font-bold tracking-widest uppercase text-gray-400 hover:text-base-content border-b-2 border-transparent transition-all" onclick="switchTab('reviews',this)">Đánh Giá</button>
+    </div>
+
+    <div class="tab-panel active block" id="tab-desc">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <div class="aspect-square rounded-4xl overflow-hidden shadow-inner border border-base-200">
+          <img src="/images/<%= product.image %>" onerror="this.src='/images/logo.png'" class="w-full h-full object-cover" alt="<%= product.name %>">
+        </div>
+        <div>
+          <h3 class="text-3xl font-bold mb-6 text-base-content"><%= product.name %></h3>
+          <p class="text-base text-gray-600 leading-relaxed mb-8">
+            <%= product.description || 'Sản phẩm được lựa chọn thủ công tỉ mỉ, mang đến vẻ đẹp tươi mới và sự tinh tế cho không gian của bạn. Những bông hoa được chăm sóc kỹ lưỡng, đảm bảo độ bền và hương thơm tự nhiên.' %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel hidden" id="tab-care">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-8 rounded-3xl border border-base-200 bg-[#faf7f2] hover:shadow-md transition-shadow">
+          <div class="text-4xl mb-4">💧</div>
+          <h4 class="text-xl font-bold mb-3">Tưới nước</h4>
+          <p class="text-sm text-gray-600 leading-relaxed">Cắt chéo cuống hoa 2–3 cm dưới nước trước khi cắm. Thay nước bình mỗi 2 ngày, giữ mức nước ở 1/3 bình để tránh thối cuống.</p>
+        </div>
+        <div class="p-8 rounded-3xl border border-base-200 bg-[#faf7f2] hover:shadow-md transition-shadow">
+          <div class="text-4xl mb-4">🌡️</div>
+          <h4 class="text-xl font-bold mb-3">Nhiệt độ</h4>
+          <p class="text-sm text-gray-600 leading-relaxed">Đặt hoa ở nơi thoáng mát, tránh ánh nắng trực tiếp và luồng gió điều hòa lạnh. Nhiệt độ lý tưởng 18–22°C giúp hoa tươi lâu hơn.</p>
+        </div>
+        <div class="p-8 rounded-3xl border border-base-200 bg-[#faf7f2] hover:shadow-md transition-shadow">
+          <div class="text-4xl mb-4">✂️</div>
+          <h4 class="text-xl font-bold mb-3">Cắt tỉa</h4>
+          <p class="text-sm text-gray-600 leading-relaxed">Loại bỏ lá tiếp xúc với nước, tỉa bỏ cánh hoa héo để hoa còn lại tươi hơn. Cắt cuống mỗi 3 ngày một lần bằng kéo sắc.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel hidden" id="tab-specs">
+      <div class="overflow-x-auto bg-base-100 rounded-3xl border border-base-200">
+        <table class="table table-zebra w-full">
+          <tbody>
+            <tr><td class="font-bold text-gray-500 w-1/3 p-6">Loại sản phẩm</td><td class="font-medium p-6"><%= product.name %></td></tr>
+            <tr><td class="font-bold text-gray-500 w-1/3 p-6">Xuất xứ</td><td class="font-medium p-6">Việt Nam / Nhập khẩu cao cấp</td></tr>
+            <tr><td class="font-bold text-gray-500 w-1/3 p-6">Thời gian giữ hoa</td><td class="font-medium p-6">5–7 ngày (Tùy điều kiện chăm sóc)</td></tr>
+            <tr><td class="font-bold text-gray-500 w-1/3 p-6">Bao bì</td><td class="font-medium p-6">Giấy gói cao cấp, Ruy băng lụa</td></tr>
+            <tr><td class="font-bold text-gray-500 w-1/3 p-6">Phù hợp dịp</td><td class="font-medium p-6">Sinh nhật, Kỷ niệm, Trang trí, Quà tặng</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-panel hidden" id="tab-reviews">
+      <div class="flex flex-col md:flex-row gap-10 items-center p-8 bg-[#faf7f2] rounded-4xl border border-base-200 mb-10">
+        <div class="text-center md:text-left md:border-r border-base-300 md:pr-10">
+          <div class="text-6xl font-bold text-[#7a9d66] mb-2">5.0</div>
+          <div class="text-yellow-400 text-xl tracking-widest mb-2">★★★★★</div>
+          <div class="text-sm text-gray-500 font-medium">Dựa trên 12 đánh giá</div>
+        </div>
+        <div class="flex-1 w-full space-y-2">
+          <div class="flex items-center gap-4 text-sm font-bold text-gray-500"><span class="w-6">5★</span><progress class="progress progress-success w-full bg-base-300 h-2" value="100" max="100"></progress><span class="w-8 text-right">100%</span></div>
+          <div class="flex items-center gap-4 text-sm font-bold text-gray-500"><span class="w-6">4★</span><progress class="progress progress-success w-full bg-base-300 h-2" value="0" max="100"></progress><span class="w-8 text-right">0%</span></div>
+          <div class="flex items-center gap-4 text-sm font-bold text-gray-500"><span class="w-6">3★</span><progress class="progress progress-warning w-full bg-base-300 h-2" value="0" max="100"></progress><span class="w-8 text-right">0%</span></div>
+          <div class="flex items-center gap-4 text-sm font-bold text-gray-500"><span class="w-6">2★</span><progress class="progress progress-error w-full bg-base-300 h-2" value="0" max="100"></progress><span class="w-8 text-right">0%</span></div>
+          <div class="flex items-center gap-4 text-sm font-bold text-gray-500"><span class="w-6">1★</span><progress class="progress progress-error w-full bg-base-300 h-2" value="0" max="100"></progress><span class="w-8 text-right">0%</span></div>
+        </div>
+      </div>
+      
+      <div class="flex flex-col gap-6">
+        <div class="p-6 rounded-3xl border border-base-200 bg-white shadow-sm">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#f5f8f4] text-[#7a9d66] font-bold text-xl flex items-center justify-center">H</div>
+            <div>
+              <div class="font-bold text-base-content">Hoàng Nam</div>
+              <div class="text-xs text-gray-400">Cách đây 2 ngày</div>
+            </div>
+            <div class="ml-auto text-yellow-400 tracking-widest">★★★★★</div>
+          </div>
+          <div class="text-sm text-gray-600 leading-relaxed">Hoa cực kỳ tươi và đúng với ảnh trên web. Shop đóng gói rất cẩn thận, giao hàng nhanh đúng giờ. Người nhận rất hài lòng, chắc chắn sẽ ủng hộ tiếp!</div>
+        </div>
+
+        <div class="p-6 rounded-3xl border border-base-200 bg-white shadow-sm">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-full bg-[#f5f8f4] text-[#7a9d66] font-bold text-xl flex items-center justify-center">L</div>
+            <div>
+              <div class="font-bold text-base-content">Lan Phương</div>
+              <div class="text-xs text-gray-400">Cách đây 1 tuần</div>
+            </div>
+            <div class="ml-auto text-yellow-400 tracking-widest">★★★★★</div>
+          </div>
+          <div class="text-sm text-gray-600 leading-relaxed">Sản phẩm tuyệt vời! Form hoa đẹp, màu sắc sang trọng. Giữ được khá lâu nếu làm đúng theo hướng dẫn chăm sóc của shop. Cảm ơn FlowerPremiu!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-20 pt-10 border-t border-base-200">
+    <div class="flex items-center gap-4 mb-10">
+      <div class="w-8 h-1 bg-[#7a9d66] rounded-full"></div>
+      <h2 class="text-3xl font-bold">Sản phẩm liên quan</h2>
+    </div>
+    
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <% if (relatedProducts && relatedProducts.length > 0) { %>
+        <% relatedProducts.forEach(function(rel) { %>
+          <a href="/product?id=<%= rel.id %>" class="group rounded-3xl border border-base-200 overflow-hidden block hover:shadow-xl transition-all hover:-translate-y-1 bg-white">
+            <div class="aspect-[4/5] overflow-hidden">
+                <img src="/images/<%= rel.image %>" onerror="this.src='/images/logo.png'" alt="<%= rel.name %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            </div>
+            <div class="p-6">
+                <div class="font-bold text-lg mb-1 truncate"><%= rel.name %></div>
+                <div class="font-bold text-[#7a9d66]">
+                  <%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(rel.price) %>
+                </div>
+            </div>
+          </a>
+        <% }); %>
+      <% } else { %>
+        <p class="text-gray-500 col-span-full">Chưa có sản phẩm liên quan.</p>
+      <% } %>
+    </div>
+  </div>
+
+</main>
+
+<footer class="mt-10">
+  <div class="relative w-full max-w-7xl mx-auto rounded-t-4xl overflow-hidden">
+    <img src="/images/greeting.png" class="block w-full h-[600px] object-cover" alt="Background image"/>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none"></div>
+    <div class="absolute inset-0 flex justify-between items-end p-8 md:p-12 text-white">
+      <p class="text-2xl font-medium relative z-10">Hai Phong, Vietnam</p>
+      <p class="absolute left-1/2 bottom-1/4 -translate-x-1/2 font-bold text-8xl md:text-9xl z-10">FP.</p>
+      <a href="/contact" class="text-2xl font-medium relative z-10 hover:text-[#7a9d66] transition-colors">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── UI LOGIC ── */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.remove('block');
+    p.classList.add('hidden');
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('text-[#7a9d66]', 'border-[#7a9d66]');
+    b.classList.add('text-gray-400', 'border-transparent');
+  });
+  
+  document.getElementById('tab-' + name).classList.remove('hidden');
+  document.getElementById('tab-' + name).classList.add('block');
+  
+  btn.classList.remove('text-gray-400', 'border-transparent');
+  btn.classList.add('text-[#7a9d66]', 'border-[#7a9d66]');
+}
+
+let liked = false, count = 128;
+function toggleLike() {
+  liked = !liked;
+  count += liked ? 1 : -1;
+  document.getElementById('likeHeart').textContent = liked ? '♥' : '♡';
+  document.getElementById('likeCount').textContent = count;
+  const btn = document.getElementById('likeBtn');
+  if (liked) {
+    btn.classList.add('text-red-500', 'border-red-300', 'bg-red-50');
+    btn.classList.remove('text-gray-500');
+  } else {
+    btn.classList.remove('text-red-500', 'border-red-300', 'bg-red-50');
+    btn.classList.add('text-gray-500');
+  }
+}
+
+function changeQty(delta) {
+  const inp = document.getElementById('qtyInput');
+  let currentVal = parseInt(inp.value);
+  let maxStock = parseInt(inp.max);
+  
+  let newVal = currentVal + delta;
+  if (newVal < 1) newVal = 1;
+  if (newVal > maxStock) newVal = maxStock;
+  
+  inp.value = newVal;
+}
+
+function buyNow(productId) {
+  // Lấy giá trị số lượng hiện tại
+  const qty = document.getElementById('qtyInput').value;
+  
+  // Điều hướng sang trang Checkout kèm theo Mã sản phẩm và Số lượng trên URL
+  window.location.href = `/checkout?id=${productId}&qty=${qty}`;
+}
+</script>
+</body>
+</html>
