@@ -200,9 +200,3 @@ Nếu bạn triển khai lên môi trường thực tế, hãy đổi URL về d
 
 - Tác giả: Bac Phan
 - Email: phanvanbac15112005@gmail.com
-
-Nếu bạn muốn, tôi có thể tiếp tục hỗ trợ bạn:
-- viết thêm phần giới thiệu chuyên nghiệp hơn
-- tạo sơ đồ chức năng cho README
-- tối ưu mô tả kỹ thuật cho dự án này theo chuẩn GitHub
-- chuẩn bị README tiếng Anh hoặc tiếng Việt cho báo cáo đồ án
